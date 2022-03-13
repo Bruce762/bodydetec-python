@@ -4,22 +4,22 @@ from urllib.parse import ParseResultBytes
 import cv2
 from cv2 import FILLED
 import mediapipe as mp
-import pyscreenshot as ImageGrab
 import numpy as np
 import pyautogui
+import mss
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_pose = mp.solutions.pose
 # For webcam input:
+sct = mss.mss()
+monitor = {"top": 40, "left": 0, "width": 800, "height": 640}
 i=0
 with mp_pose.Pose(
-    
-    min_detection_confidence=0.2,
-    min_tracking_confidence=0.2) as pose:
+    min_detection_confidence=0.5,
+    min_tracking_confidence=0.5) as pose:
   while True:
-    image = pyautogui.screenshot(region=[0,0,1000,1000]) # x,y,w,h
-    image = np.array(image)
+    image = np.array(sct.grab(monitor))
     image = cv2.resize(image,(0,0),fx=0.5,fy=0.5)
     imgHeigh = image.shape[0]
     imgWide = image.shape[1]
@@ -29,6 +29,7 @@ with mp_pose.Pose(
     image.flags.writeable = False
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     '''
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     results = pose.process(image)
     # Draw the pose annotation on the image.
     image.flags.writeable = True

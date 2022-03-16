@@ -1,26 +1,32 @@
 from cgi import print_arguments
-from pydoc import ErrorDuringImport
-from urllib.parse import ParseResultBytes
+from pickle import TRUE
 import cv2
 from cv2 import FILLED
 import mediapipe as mp
-import pyscreenshot as ImageGrab
 import numpy as np
-import pyautogui
-
+#import pyautogui
+import mss
+import keyboard
+import win32api
+import win32con
+import time
+#pyautogui.FAILSAFE = True
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_pose = mp.solutions.pose
 # For webcam input:
-i=0
+sct = mss.mss()#mss截圖
+top = 360
+left = 480
+width = 300
+height = 300
+monitor = {"top": top, "left": left, "width": width, "height": height}#截圖方框位置
 with mp_pose.Pose(
-    
-    min_detection_confidence=0.2,
-    min_tracking_confidence=0.2) as pose:
+    min_detection_confidence=0.6,
+    min_tracking_confidence=0.6) as pose:
   while True:
-    image = pyautogui.screenshot(region=[0,0,1000,1000]) # x,y,w,h
-    image = np.array(image)
-    image = cv2.resize(image,(0,0),fx=0.5,fy=0.5)
+    t=time.time()
+    image = np.array(sct.grab(monitor))#截圖
     imgHeigh = image.shape[0]
     imgWide = image.shape[1]
     # To improve performance, optionally mark the image as not writeable to
@@ -29,6 +35,7 @@ with mp_pose.Pose(
     image.flags.writeable = False
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     '''
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     results = pose.process(image)
     # Draw the pose annotation on the image.
     image.flags.writeable = True
@@ -47,15 +54,24 @@ with mp_pose.Pose(
     """
     if results.pose_landmarks:  
       for i, lm in enumerate(results.pose_landmarks.landmark):
-        print(i)
-        print(lm)
+        #print(i)
+        #print(lm)
+        #lm.x是倍數
         if i == 0 and lm:
-          print(lm.x)
+          #print(lm.x)
           xPos = lm.x* imgWide
           yPos = lm.y* imgHeigh
-          print(xPos)
-          print(yPos)
-          image = cv2.circle(image, (int(xPos), int(yPos)), 4, (255, 0, 0), FILLED)
+          xPos = int(xPos)
+          yPos = int(yPos)
+          image = cv2.circle(image, (xPos,yPos), 4, (255, 0, 0), FILLED)
+          if keyboard.is_pressed("v"):
+            x=int((lm.x-0.5)*imgWide)
+            y=int((lm.y-0.5)*imgHeigh)
+            win32api.mouse_event(win32con.MOUSEEVENTF_MOVE, x, y, 0, 0)
+            #win32api.SetCursorPos(((left+xPos*2),(top+yPos*2)))
+            #pyautogui.moveTo((left+xPos*2),(top+yPos*2),duration=0.1)
+          break
+    image = cv2.resize(image,(0,0),fx=1.5,fy=1.5)
     cv2.imshow('MediaPipe Pose', image)
     if cv2.waitKey(1) & 0xFF == 27:
       break

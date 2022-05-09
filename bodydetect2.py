@@ -6,11 +6,9 @@ import mss
 import keyboard
 import time
 import ctypes, sys
-import mouse
 import win32api
-import pydirectinput
-import pyautogui
 import win32con
+from pynput.mouse import Listener
 
 mpPose = mp.solutions.pose
 poses = mpPose.Pose(static_image_mode=True, model_complexity = 0, enable_segmentation = True, smooth_landmarks = False, min_detection_confidence=0.4)
@@ -18,8 +16,25 @@ mpDraw = mp.solutions.drawing_utils
 poseLmsStyle = mpDraw.DrawingSpec(color=(0, 0, 255), thickness=10)
 poseconStyle = mpDraw.DrawingSpec(color=(0, 255, 0), thickness=10)
 sct = mss.mss()#mss截圖
-centerL = 800
-centerT = 478
+click = False
+centerL = 0
+centerT = 0
+def clicked(x, y, button, is_press):
+    if is_press:
+        global click,centerL,centerT
+        centerL=x
+        centerT=y
+        click=True
+
+listener = Listener(on_click=clicked)
+time.sleep(4)
+print("detection start")
+listener.start()
+while True:
+    if click:
+        listener.stop()
+        print("successfully")
+        break
 width = 300
 height = 300
 left = centerL - (width/2)
@@ -28,11 +43,11 @@ left = int(left)
 top = int(top)
 monitor = {"top": top, "left": left, "width": width, "height": height}#截圖方框位置
 istart = True
-movespeed = 1.5
+movespeed = 1
 
     #Code of your program here        
 while True:
-    mouseleft = win32api.GetKeyState(0x02)#取得滑鼠左鍵，按下時值為-128
+    mouseleft = win32api.GetKeyState(0x02)#取得滑鼠右鍵，按下時值為-128
     
     if(keyboard.is_pressed('o')):
         istart = True

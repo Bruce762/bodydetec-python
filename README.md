@@ -6,5 +6,4 @@ when click middle mouse, it will autoly move mouse  the target(aim) and press le
 
 ## bodydetect2.py :
 when click right mouse, if just autoly move mouse the target(aim).<br>
-you can also donwload exe file from following link
-https://drive.google.com/file/d/1bt4taPVGj9qmMW-y-2jNWaUSNeaGj84J/view
+you can also donwload exe file from following link : https://drive.google.com/file/d/1bt4taPVGj9qmMW-y-2jNWaUSNeaGj84J/view

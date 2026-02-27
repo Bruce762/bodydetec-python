@@ -73,7 +73,7 @@ while True:
 ```
 ### Ai判斷函式庫
 
-由於能力不足以自己訓練一個Ai，於是我想到竟然自己做不來就借助別人的。找了很久我找到Mediapipe，一個Google開源的函示庫。這是他們的官方 https://google.github.io/mediapipe/solutions/pose ，裡面有範例，我刪掉用不到的部分保留需要用到的。Mediapipe有很多函式可以用，而mp.soluiton.pose是其中有關人物偵測。第9行cv2.cvtColor()把圖片轉換成RGB的格式，因為需要RGB的格式Ai才能處理。第10行poses.process()把image(圖片)經過處理後，以NamedTuple的方式存在landmark，像是下圖(取自官方)總共有32個點。
+使用一個Google開源的函示庫。這是他們的官方 https://google.github.io/mediapipe/solutions/pose ，裡面有範例，我刪掉用不到的部分保留需要用到的。Mediapipe有很多函式可以用，而mp.soluiton.pose是其中有關人物偵測。第9行cv2.cvtColor()把圖片轉換成RGB的格式，因為需要RGB的格式Ai才能處理。第10行poses.process()把image(圖片)經過處理後，以NamedTuple的方式存在landmark，像是下圖(取自官方)總共有32個點。
 ![](https://i.imgur.com/dbMomJk.png =400x230)
 為了讓我們觀測到每個點的標示狀態，14行的mpDraw.draw_landmarks會在image上標出點與點之間的連線。poseLmsStyle決定圓點的顏色粗細，poseconStyle則是線。16行用enumerate幫每個點的landmark(NameTuple)編號。由於我設定瞄準的點是胸口，所以我取第11與第12個landmark裡面的x、y座標做平均。第31行把FPS偵數算出，方便我知道程式跑的速度。
 
